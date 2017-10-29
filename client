@@ -1,0 +1,80 @@
+#!/usr/bin/python3
+
+import sys
+from gi.repository import GLib
+import subprocess
+import time
+
+#
+from KurodenGpio import KurodenGpio
+from Tone import Tone
+from EventDispatcher import EventDispatcher
+from PhoneStatus import PhoneStatus
+from HFP import HFP
+from Schedule import Schedule
+
+from StatusNone import StatusNone
+from StatusIdle import StatusIdle
+from StatusDialing import StatusDialing
+from StatusBunmeido import StatusBunmeido
+from StatusCalling import StatusCalling
+from StatusIncoming import StatusIncoming
+from StatusTalking import StatusTalking
+from StatusDisconnected import StatusDisconnected
+from StatusShutdown import StatusShutdown
+from StatusAlarmSet import StatusAlarmSet
+from StatusAlarm import StatusAlarm
+
+# /home/pi/.config/lxsession/LXDE-pi/autostart
+#   @sudo pigpiod -l
+#   @/home/pi/hfpclient/client
+#
+#
+
+#####
+if __name__ == '__main__':
+
+	# start pulseaudio daemon
+	time.sleep(10)
+	subprocess.call([ "pulseaudio", "--start", "-D" ])
+
+	#cv = dbus.Interface(bus.get_object('org.ofono', modem),
+	#						'org.ofono.CallVolume')
+	#cv.SetProperty("SpeakerVolume", dbus.Byte(100))
+
+	#####
+	tone_manager = Tone()
+
+	dispatcher = EventDispatcher()
+	change_status = dispatcher.change_status
+	push_event = dispatcher.push
+
+	gpio = KurodenGpio(push_event)
+	hfp_manager = HFP(push_event)
+	schedule = Schedule(push_event)
+
+	statuses = {
+		PhoneStatus.NONE     : StatusNone(change_status=change_status),
+		PhoneStatus.IDLE     : StatusIdle(change_status=change_status),
+		PhoneStatus.DIALING  : StatusDialing(change_status=change_status, tone=tone_manager),
+		PhoneStatus.CALLING  : StatusCalling(change_status=change_status, hfp=hfp_manager, tone=tone_manager),
+		PhoneStatus.BUNMEIDO : StatusBunmeido(change_status=change_status),
+		PhoneStatus.INCOMING : StatusIncoming(change_status=change_status, gpio=gpio, hfp=hfp_manager),
+		PhoneStatus.TALKING  : StatusTalking(change_status=change_status, hfp=hfp_manager),
+		PhoneStatus.DISCONNECTED  : StatusDisconnected(change_status=change_status, tone=tone_manager),
+		PhoneStatus.SHUTDOWN : StatusShutdown(change_status=change_status),
+		PhoneStatus.ALARMSET : StatusAlarmSet(change_status=change_status, gpio=gpio, tone=tone_manager, schedule=schedule),
+		PhoneStatus.ALARM    : StatusAlarm(change_status=change_status, gpio=gpio),
+	}
+
+	dispatcher.start(statuses=statuses, init_status=PhoneStatus.IDLE )
+
+	try:
+		print("Ready.")
+		mainloop = GLib.MainLoop()
+		mainloop.run()
+
+	except KeyboardInterrupt:
+		dispatcher.end()
+		subprocess.call([ "pulseaudio", "-k" ])
+		print("** FINISH **")
