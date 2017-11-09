@@ -1,3 +1,8 @@
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 from PhoneStatus import PhoneStatus
 from PhoneStatus import StatusBase
 import Event
@@ -8,7 +13,7 @@ import subprocess
 import os
 
 class StatusAlarmSet(StatusBase):
-	p_bunmeido = None
+	p_sound = None
 	set_hour = 0
 	set_min = 0
 	dial_count = 0
@@ -23,6 +28,15 @@ class StatusAlarmSet(StatusBase):
 		self.tone = tone
 		self.schedule = schedule
 
+		msg_common = "オメザメニナリタイジコ'クオ、ヨン'ケタデ、ニューリョクシテクダ'サイ。"
+		msg_common += "タト'エバ、ゴ'ゼン、ヒチ'ジ、サンジュップン/ノ/バ'アイワ、"
+		msg_common += "ゼ'ロ、ナ'ナ、サン、ゼ'ロ、ト/ダイヤル/シテ/クダ'サイ。"
+
+		self.msg_first = "モーニングコ'ールノ/セッテイオ/カイシシマ'_ス。" + msg_common
+
+		self.msg_retry = "ニューリョクニ/アヤマリ'ガ/アリ'マス.サ'イド/ニューリョク_シテクダサ'イ。"
+		self.msg_retry += msg_common
+
 	def start(self, data):
 		super().start()
 		dir = os.path.dirname(__file__)
@@ -30,31 +44,28 @@ class StatusAlarmSet(StatusBase):
 		self.set_hour = 0
 		self.set_min = 0
 		self.dial_count = 0
-		msg = "モーニングコ'ールノ/セッテイオ/カイシシマ'_ス。"
-		msg += "オメザメニナリタイジコ'クオ、ヨ'ンケタデ、ニューリョクシテクダ'サイ。"
-		msg += "タト'エバ、ゴ'ゼン、ヒチ'ジ、サンジュップン'ノ/バ'アイワ、"
-		msg += "ゼ'ロ、ナ'ナ、サン、ゼ'ロ、ト/ダ'イヤルシテ/クダ'サイ。"
-		self.p_bunmeido = subprocess.Popen(["paplay", self.dir_sound + "mezamashi_first.wav"])
-		pass
+
+		subprocess.Popen(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", self.msg_first] )
+		self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 
 	def end(self):
 		super().end()
-		if self.p_bunmeido and self.p_bunmeido.poll() == None:
-			self.p_bunmeido.kill()
+		if self.p_sound and self.p_sound.poll() == None:
+			self.p_sound.kill()
 
 	def callback_offhook(self):
 		return True
 
 	def callback_onhook(self):
-		if self.p_bunmeido and self.p_bunmeido.poll() == None:
-			self.p_bunmeido.kill()
+		if self.p_sound and self.p_sound.poll() == None:
+			self.p_sound.kill()
 		#self.gpio.ring_single()
 		self.change_status(PhoneStatus.IDLE)
 		return True
 
 	def callback_dial_start(self):
-		if self.p_bunmeido and self.p_bunmeido.poll() == None:
-			self.p_bunmeido.kill()
+		if self.p_sound and self.p_sound.poll() == None:
+			self.p_sound.kill()
 		return True
 
 	def callback_dial_end(self, dial):
@@ -86,12 +97,13 @@ class StatusAlarmSet(StatusBase):
 				msg  = "<NUMK VAL=" + str(self.set_hour) + " COUNTER=じ>." + minstr + ".ニ/セッテイシテ/ヨロシ'イデスカ？"
 				msg += "。ヨロシ'ケレバ、イ_チ'、オ、ニューリョクオ、ヤリナオ'ス+ト'キワ、ゼ'ロ、オ、ダイヤルシテクダサ'イ。"
 				subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", msg])
-				self.p_bunmeido = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
+				self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 			else:
 				self.dial_count = 0
 				self.set_hour = 0
 				self.set_min = 0
-				self.p_bunmeido = subprocess.Popen(["paplay", self.dir_sound + "mezamashi_retry.wav"])
+				subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", self.msg_retry])
+				self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 
 		if self.dial_count == 5:
 			if dial == 1:
@@ -103,30 +115,15 @@ class StatusAlarmSet(StatusBase):
 					minstr = "<NUMK VAL=" + str(self.set_min) + " COUNTER=ふん>"
 				msg  = "<NUMK VAL=" + str(self.set_hour) + " COUNTER=じ>." + minstr + ".ニ/セッテイしま'した。デンワオ/オキリクダサ'イ。"
 				subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-k", "-o", "/tmp/hfpclient_tmp.wav", msg])
-				self.p_bunmeido = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
+				self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 			elif dial == 0:
 				self.dial_count = 0
 				self.set_hour = 0
 				self.set_min = 0
-				self.p_bunmeido = subprocess.Popen(["paplay", self.dir_sound + "mezamashi_first.wav"])
+				subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", self.msg_first])
+				self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 		return True
 
 	def callback_incoming(self, path):
 		self.change_status(PhoneStatus.INCOMING)
 		return True
-
-if __name__ == '__main__':
-
-	dir_sound = os.path.dirname(__file__) + "/sound/"
-
-	msg = "モーニングコ'ールノ/セッテイオ/カイシシマ'_ス。"
-	msg += "オメザメニナリタイジコ'クオ、ヨン'ケタデ、ニューリョクシテクダ'サイ。"
-	msg += "タト'エバ、ゴ'ゼン、ヒチ'ジ、サンジュップン/ノ/バ'アイワ、"
-	msg += "ゼ'ロ、ナ'ナ、サン、ゼ'ロ、ト/ダイヤル/シテ/クダ'サイ。"
-	subprocess.Popen(["/home/pi/aquestalkpi/AquesTalkPi", "-o", dir_sound + "mezamashi_first.wav", "-k", msg] )
-
-	msg = "ニューリョクニ/アヤマリ'ガ/アリ'マス.サ'イド/ニューリョク_シテクダサ'イ。"
-	msg += "オメザメニナリタイジコ'クオ、ヨ'ンケタデ、ニューリョクシテクダ'サイ"
-	msg += "タト'エバ、ゴ'ゼン、ヒチ'ジ、サンジュップン'ノ/バア'イワ、"
-	msg += "ゼ'ロ、ナ'ナ、サン、ゼ'ロ、ト/ダ'イヤルシテク'ダサイ。"
-	subprocess.Popen(["/home/pi/aquestalkpi/AquesTalkPi", "-o", dir_sound + "mezamashi_retry.wav", "-k", msg] )

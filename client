@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 import sys
 from gi.repository import GLib
 import subprocess
@@ -37,10 +42,6 @@ if __name__ == '__main__':
 	# start pulseaudio daemon
 	time.sleep(10)
 	subprocess.call([ "pulseaudio", "--start", "-D" ])
-
-	#cv = dbus.Interface(bus.get_object('org.ofono', modem),
-	#						'org.ofono.CallVolume')
-	#cv.SetProperty("SpeakerVolume", dbus.Byte(100))
 
 	#####
 	tone_manager = Tone()

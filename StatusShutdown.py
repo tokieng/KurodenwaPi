@@ -1,3 +1,8 @@
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 from PhoneStatus import PhoneStatus
 from PhoneStatus import StatusBase
 import Event
@@ -15,7 +20,10 @@ class StatusShutdown(StatusBase):
 	def start(self, data):
 		super().start()
 		dir = os.path.dirname(__file__)
-		self.p_sound = subprocess.Popen(["paplay", "sound/shutdown.wav"])
+		msg = "コレヨ'リ、シャットダ'ウンオ/カイシシマ'_ス。"
+		msg += "<NUMK VAL=2 COUNTER=フン>ホド/マ'ッテカラ、デンゲンオ/ヌイテクダサ'イ。デンワオ/キ'ッテ、オマチクダ'サイ。"
+		subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", msg])
+		self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 		pass
 
 	def end(self):
@@ -29,8 +37,3 @@ class StatusShutdown(StatusBase):
 		subprocess.call("sudo shutdown -h now", shell=True)
 		pass
 
-if __name__ == '__main__':
-
-	msg = "コレヨ'リ、シャットダ'ウンオ/カイシシマ'_ス。"
-	msg += "<NUMK VAL=2 COUNTER=フン>ホド/マ'ッテカラ、デンゲンオ/ヌイテクダサ'イ。デンワオ/キ'ッテ、オマチクダ'サイ。"
-	subprocess.Popen(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "sound/shutdown.wav", "-k", msg] )

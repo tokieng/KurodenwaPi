@@ -1,3 +1,8 @@
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 import pigpio
 from enum import Enum
 import time

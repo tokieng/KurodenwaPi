@@ -1,8 +1,12 @@
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 from PhoneStatus import PhoneStatus
 from PhoneStatus import StatusBase
 import Event
 
-# for カステラ
 import subprocess
 import os
 

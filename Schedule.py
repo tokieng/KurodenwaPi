@@ -1,3 +1,8 @@
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
 from datetime import datetime, timedelta
 import threading
 
