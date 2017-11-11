@@ -45,7 +45,7 @@ class StatusAlarmSet(StatusBase):
 		self.set_min = 0
 		self.dial_count = 0
 
-		subprocess.Popen(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", self.msg_first] )
+		subprocess.call(["/home/pi/aquestalkpi/AquesTalkPi", "-o", "/tmp/hfpclient_tmp.wav", "-k", self.msg_first] )
 		self.p_sound = subprocess.Popen(["paplay", "/tmp/hfpclient_tmp.wav"])
 
 	def end(self):

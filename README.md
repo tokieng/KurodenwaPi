@@ -5,6 +5,7 @@ Bluetooth-HFP client with Kurodenwa and Raspberry-Pi written by Python. Kurodenw
 * Raspberry Pi 1 B+ or 2 or 3
 * USB Bluetooth Dongle (except for RPi-3)
 * USB Audio Cable
+* and, your handmade circuit, see circuit.png
 
 ## Need more files
 * Sound Files (not include this repository)
@@ -20,7 +21,7 @@ Bluetooth-HFP client with Kurodenwa and Raspberry-Pi written by Python. Kurodenw
     GPIO library and daemon  
     http://abyz.me.uk/rpi/pigpio/  
   * AquesTalkPi  
-    (Japanese language) speech synthesis software  
+    Japanese language speech synthesis software  
     https://www.a-quest.com/products/aquestalkpi.html  
     install at /home/pi/aquestalkpi/  
 
@@ -31,3 +32,6 @@ Bluetooth-HFP client with Kurodenwa and Raspberry-Pi written by Python. Kurodenw
 
 ## License
 MIT License
+
+## Copyright
+2017 Yoshinori Tokimoto (tokieng)
