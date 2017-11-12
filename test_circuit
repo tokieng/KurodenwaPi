@@ -1,0 +1,53 @@
+#!/usr/bin/python3
+
+# KurodenwaPi
+# Copyright 2017 Yoshinori Tokimoto(tokieng)
+# https://github.com/tokieng/KurodenwaPi
+# MIT License
+
+from KurodenGpio import KurodenGpio
+from EventDispatcher import EventDispatcher
+from PhoneStatus import StatusBase
+
+from enum import Enum
+Status = Enum("Status", "DIALTEST")
+
+class StatusDialTest(StatusBase):
+	status_name = 'DialTest'
+
+	def __init__(self, change_status):
+		super().__init__(change_status)
+
+	def start(self, data):
+		super().start()
+		print("Ready.")
+
+	def callback_offhook(self):
+		print("Detected: Off Hook.")
+		return True
+
+	def callback_onhook(self):
+		print("Detected: On Hook.")
+		return True
+
+	def callback_dial_start(self):
+		print("Detected: Dial Start.")
+		return True
+
+	def callback_dial_end(self, dial):
+		print("Detected: Dial Number:{0}".format(dial))
+		return True
+
+if __name__ == '__main__':
+
+	dispatcher = EventDispatcher()
+	change_status = dispatcher.change_status
+	push_event = dispatcher.push
+
+	gpio = KurodenGpio(push_event)
+
+	statuses = {
+		Status.DIALTEST : StatusDialTest(change_status=change_status)
+	}
+
+	dispatcher.start(statuses=statuses, init_status=Status.DIALTEST )
