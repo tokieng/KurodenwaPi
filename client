@@ -32,7 +32,7 @@ from StatusAlarm import StatusAlarm
 
 # /home/pi/.config/lxsession/LXDE-pi/autostart
 #   @sudo pigpiod -l
-#   @/home/pi/hfpclient/client
+#   @/home/pi/KurodenwaPi/client
 #
 #
 

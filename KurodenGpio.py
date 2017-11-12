@@ -166,15 +166,3 @@ class KurodenGpio:
 		gpio.write(PORT_COIL_OUT1, LOW)
 		gpio.write(PORT_COIL_OUT2, LOW)
 
-#####
-def _dummy_push_event():
-	pass
-
-if __name__ == '__main__':
-	print("** START **")
-	gpio = KurodenGpio(_dummy_push_event)
-	time.sleep(3)
-	print("** START 2 **")
-	gpio.ring_start(3)
-	time.sleep(20)
-	gpio.ring_end()

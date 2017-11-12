@@ -13,10 +13,6 @@ import Event
 import KurodenGpioEvent as GpioEvent
 import HFPEvent
 import ScheduleEvent
-from PhoneStatus import PhoneStatus
-
-from StatusIncoming import StatusIncoming
-from StatusTalking import StatusTalking
 
 class EventDispatcher:
 
