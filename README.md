@@ -26,9 +26,16 @@ Bluetooth-HFP client with Kurodenwa and Raspberry-Pi written by Python. Kurodenw
     install at /home/pi/aquestalkpi/  
 
 ## Usage
+* Install  
 `$ git clone https://github.com/tokieng/KurodenwaPi.git`  
 `$ cd KurodenwaPi`  
+* Run test command of your circuit  
+`$ ./test_circuit`
+* Run HFP client  
 `$ ./client`
+
+## Sample circuit
+![Image of the circuit](./circuit.png)
 
 ## License
 MIT License
